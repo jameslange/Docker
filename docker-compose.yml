@@ -1,0 +1,34 @@
+# this is only for shared configurations
+version: '3'
+services:
+  node-app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    depends_on:
+    # because it depends on mongo, we start mongo first
+      - mongo
+  # using built in image so we dont need build: .
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=james
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+    # want to use a name because we can then differentiate between volumes
+    # in this case mong-db is the name of the volume
+    # the /data/db is found from the docs, where data is stored on this container
+      - mongo-db:/data/db
+volumes:
+  mongo-db:
+
+# docker-compose -f docker-compose.yml -f docker-compose.dev.yml up 
+# this is to run dev env. The docker-compose.yml holds shared config, everything will be overwritten in the subsequent file
+# -f is for file
+
+
+# dns is built into docker, so if you want to communicate in the network, you can just ping the name of the service
+# ex ping mongo
+# only with networks which you create, not default bridged network
